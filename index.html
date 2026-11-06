@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#174c3c"><link rel="manifest" href="manifest.webmanifest">
+<title>Mi Inventario Universal</title>
+<style>
+:root{--g:#174c3c;--p:#e8f2ed;--ink:#1d2924;--muted:#68766f;--line:#dce5df;--red:#a83232}
+*{box-sizing:border-box}body{margin:0;background:#f5f7f5;color:var(--ink);font:15px system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:var(--g);color:white;padding:18px;position:sticky;top:0;z-index:5}header h1{margin:0;font-size:22px}header p{margin:3px 0 0;font-size:12px;opacity:.85}
+main{max-width:850px;margin:auto;padding:12px 12px 80px}.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
+button{border:0;border-radius:10px;padding:11px;font:600 13px system-ui;cursor:pointer}.tab{background:#e6ece8;color:#315044}.tab.active,.primary{background:var(--g);color:white}
+.card{background:white;border:1px solid var(--line);border-radius:15px;padding:14px;margin-bottom:12px;box-shadow:0 2px 8px #183b2910}
+h2{font-size:17px;margin:0 0 10px}h3{font-size:15px;margin:0 0 4px}
+label{display:block;font-size:12px;font-weight:650;margin:9px 0 4px;color:#43534a}
+input,select,textarea{width:100%;padding:11px;border:1px solid #cbd8d0;border-radius:9px;background:white;font:15px system-ui;color:var(--ink)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.btn{width:100%;margin-top:12px}.secondary{background:#e7eee9;color:var(--g)}.danger{background:#a83232;color:white}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}.stat{background:var(--p);border-radius:12px;padding:10px 5px;text-align:center}.stat strong{display:block;font-size:19px}.stat span{font-size:10px;color:var(--muted)}
+.item{padding:11px 0;border-bottom:1px solid var(--line)}.item:last-child{border:0}.top{display:flex;justify-content:space-between;gap:8px}.qty{font-weight:750;color:var(--g);white-space:nowrap}.sub{font-size:11px;color:var(--muted);margin-top:3px}.pill{display:inline-block;padding:3px 7px;border-radius:20px;background:#fff1dd;color:#805313;font-size:10px}.pill.red{background:#fae7e7;color:#922}
+.actions{display:flex;gap:7px;margin-top:8px}.actions button{flex:1}.hidden{display:none!important}.muted{font-size:12px;color:var(--muted)}.empty{text-align:center;padding:18px;color:var(--muted)}.report{font-size:13px;line-height:1.7}
+@media(max-width:420px){.tabs{grid-template-columns:repeat(4,1fr)}.tab{padding:9px 3px;font-size:11px}.grid3{grid-template-columns:1fr 1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+</style></head><body>
+<header><h1>📦 Mi Inventario Universal</h1><p>Productos, existencias, movimientos y reportes</p></header>
+<main>
+<div class="stats">
+<div class="stat"><strong id="sProd">0</strong><span>PRODUCTOS</span></div>
+<div class="stat"><strong id="sStock">0</strong><span>UNIDADES EN STOCK</span></div>
+<div class="stat"><strong id="sDam">0</strong><span>DAÑADAS</span></div>
+<div class="stat"><strong id="sValue">$0</strong><span>VALOR DEL STOCK</span></div>
+</div>
+<nav class="tabs">
+<button class="tab active" data-tab="products">Productos</button><button class="tab" data-tab="movement">Movimientos</button><button class="tab" data-tab="reports">Reportes</button><button class="tab" data-tab="settings">Respaldo</button>
+</nav>
+<section id="products">
+<div class="card"><h2>Registrar producto</h2><form id="productForm">
+<label>Nombre del producto *</label><input id="pName" required placeholder="Ej. Agua 500 ml, arroz, camiseta…">
+<div class="grid"><div><label>Código / SKU</label><input id="pCode" placeholder="Código interno"></div><div><label>Código de barras</label><input id="pBarcode" placeholder="EAN / UPC (opcional)"></div></div>
+<div class="grid"><div><label>Categoría</label><input id="pCategory" placeholder="Bebidas, alimentos, ropa…"></div><div><label>Proveedor</label><input id="pSupplier" placeholder="Nombre del proveedor"></div></div>
+<div class="grid3"><div><label>Unidad</label><select id="pUnit"><option>unidad</option><option>caja</option><option>paquete</option><option>kg</option><option>gramo</option><option>litro</option><option>ml</option><option>docena</option><option>metro</option><option>par</option><option>rollo</option><option>bolsa</option></select></div><div><label>Costo unitario ($)</label><input id="pCost" type="number" min="0" step=".01" value="0"></div><div><label>Precio venta ($)</label><input id="pPrice" type="number" min="0" step=".01" value="0"></div></div>
+<div class="grid3"><div><label>Stock inicial</label><input id="pStock" type="number" min="0" step=".01" value="0"></div><div><label>Stock mínimo</label><input id="pMin" type="number" min="0" step=".01" value="0"></div><div><label>Vencimiento (si aplica)</label><input id="pExpiry" type="date"></div></div>
+<label>Ubicación / observaciones</label><input id="pLocation" placeholder="Bodega, estante, color, talla…">
+<button class="btn primary" type="submit">Guardar producto</button></form></div>
+<div class="card"><h2>Catálogo e inventario</h2><input id="search" placeholder="Buscar por nombre, código, categoría o proveedor…"><div id="productList"></div></div>
+</section>
+<section id="movement" class="hidden"><div class="card"><h2>Registrar movimiento</h2><form id="moveForm">
+<label>Producto *</label><select id="mProduct" required></select>
+<div class="grid"><div><label>Tipo</label><select id="mType"><option value="entrada">Entrada / compra</option><option value="salida">Salida / venta o consumo</option><option value="dañado">Dañado / merma</option><option value="ajuste">Ajuste de existencias</option></select></div><div><label>Cantidad *</label><input id="mQty" type="number" min=".01" step=".01" required></div></div>
+<div class="grid"><div><label>Fecha</label><input id="mDate" type="date" required></div><div><label>Referencia (factura, venta…)</label><input id="mRef" placeholder="N.º de factura o nota"></div></div>
+<label>Detalle / motivo</label><input id="mNote" placeholder="Compra, venta, vencimiento, rotura…">
+<button class="btn primary" type="submit">Guardar movimiento</button><p class="muted">Las salidas y mermas descuentan del stock disponible. El ajuste establece el stock en la cantidad indicada.</p>
+</form></div></section>
+<section id="reports" class="hidden">
+<div class="card"><h2>Reportes por período</h2><div class="grid"><div><label>Desde</label><input id="rFrom" type="date"></div><div><label>Hasta</label><input id="rTo" type="date"></div></div><button class="btn primary" id="runReport">Generar reporte</button><div id="reportResult" class="report"></div><button class="btn secondary" id="exportMoves">Exportar movimientos CSV</button><button class="btn secondary" id="exportProducts">Exportar productos CSV</button></div>
+</section>
+<section id="settings" class="hidden"><div class="card"><h2>Respaldo y restauración</h2><p class="muted">Guarda una copia periódica para no perder tus datos al cambiar de celular o limpiar el navegador.</p><button class="btn primary" id="backup">Descargar respaldo completo (JSON)</button><label>Restaurar desde respaldo JSON</label><input type="file" id="restore" accept="application/json"><p class="muted">La restauración reemplaza los datos actuales por los del archivo elegido.</p></div>
+<div class="card"><h2>Información</h2><p class="muted">Aplicación genérica: admite cualquier mercancía y unidades configurables. La lectura automática de códigos de barras y la sincronización entre varios celulares no están incluidas en esta versión.</p></div></section>
+</main>
+<script src="app.js"></script></body></html>
